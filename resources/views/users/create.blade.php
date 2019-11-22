@@ -8,6 +8,10 @@
                 <h5>注册</h5>
             </div>
             <div class="card-body">
+
+{{--                错误信息反馈--}}
+                @include('shared._errors')
+
                 <form action="{{ route('users.store') }}" method="post">
 
 {{--                    token添加--}}
