@@ -37,4 +37,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+//    用户头像方法
+    public function gravatar($size = '100'){
+        $hash = md5(strtolower(trim($this->attributes['email'])));
+        return "http://www.gravatar.com/avatar/$hash?=$size";
+    }
+
+//    QQ头像方法
+    public function QQpic($size = '100'){
+        $name = strstr($this->attributes['email'], '@', true);
+        return "http://q1.qlogo.cn/g?b=qq&nk=$name&s=$size";
+    }
+
 }
+
+
