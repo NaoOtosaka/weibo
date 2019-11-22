@@ -7,6 +7,7 @@
     @include('layout._header')
 
     <div class="container">
+        @include('shared._messages')
         @yield('content')   <!--用于显示content区块的内容，内容由继承自该模板的子视图定义-->
         @include('layout._footer')
     </div>
