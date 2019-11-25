@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+use Auth;
+
 class UsersController extends Controller
 {
     //创建用户的页面
@@ -39,4 +41,29 @@ class UsersController extends Controller
         return redirect()->route('users.show', [$user]);
     }
 
+//    资料编辑页面跳转
+    public function edit(User $user){
+        return view('users.edit', compact('user'));
+    }
+
+//    资料更新
+    public function update(User $user, Request $request){
+        $this->validate($request,[
+           'name' => 'required|max:50',
+           'password' => 'nullable|confirmation|min:6'
+        ]);
+
+        $data = [];
+        $data['name'] = $request->name;
+//        验证密码是都修改
+        if ($request->password){
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $user->update($data);
+
+        session()->flash('success', '您的资料更新好啦~');
+
+        return redirect()->route('users.show', $user);
+    }
 }
