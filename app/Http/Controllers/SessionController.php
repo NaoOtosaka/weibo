@@ -28,10 +28,18 @@ class SessionController extends Controller
             ]);
 //        身份验证
         if (Auth::attempt($credentials, $request->has('remember'))){
-//            登陆成功
-            session()->flash('success', '欢迎回到路上');
-            $fallback = route('users.show', [Auth::user()]);
-            return redirect()->intended($fallback);
+//            激活验证
+            if (Auth::user()->activated){
+                //            登陆成功
+                session()->flash('success', '欢迎回到路上');
+                $fallback = route('users.show', [Auth::user()]);
+                return redirect()->intended($fallback);
+            }else{
+//                未验证的账号
+                Auth::logout;
+                session()->flash('warning', '你的账号还没有激活哦，请检查邮箱中的注册邮件进行激活');
+                return redirect('/');
+            }
         }else{
 //            登录失败
             session()->flash('danger', '您的驾照过期或者不存在喔~');
