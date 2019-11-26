@@ -95,13 +95,11 @@ class UsersController extends Controller
     protected function sendEmailConfirmationTo($user){
         $view = 'emails.confirm';
         $data = compact('user');
-        $from = 'naotosaka@laravel.com';
-        $name = 'NaoOtosaka';
         $to = $user->email;
         $subject = '感谢注册~请确认一下你的邮箱喔~';
 
-        Mail::send($view, $data, function ($massage) use ($from, $name, $to, $subject){
-            $massage->from($from, $name)->to($to)->subject($subject);
+        Mail::send($view, $data, function ($massage) use ($to, $subject){
+            $massage->to($to)->subject($subject);
         });
 
 
