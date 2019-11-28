@@ -9,5 +9,6 @@
                 /{{ $status->created_at->diffForHumans() }}
             </small>
         </h5>
+        {{ $status->content }}
     </div>
 </li>
