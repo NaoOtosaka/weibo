@@ -10,7 +10,8 @@ use Mail;
 
 class UsersController extends Controller
 {
-    public function __construct(){
+    public function __construct()
+    {
         $this->middleware('auth', [
             'except' => ['show', 'create', 'store', 'index', 'confirmEmail']
         ]);
@@ -20,18 +21,21 @@ class UsersController extends Controller
     }
 
 //    用户列表
-    public function index(){
+    public function index()
+    {
         $users = User::paginate(10);
         return view('users.index', compact('users'));
     }
 
     //创建用户的页面
-    public function create(){
+    public function create()
+    {
         return view('users.create');
     }
 
     //显示用户个人信息
-    public function show(User $user){
+    public function show(User $user)
+    {
         $statuses = $user->statuses()
             ->orderBy('created_at', 'desc')
             ->paginate(30);
@@ -39,9 +43,10 @@ class UsersController extends Controller
     }
 
 //    处理用户注册数据验证
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 //        信息验证
-        $this->validate($request,[
+        $this->validate($request, [
             'name' => 'required|max:50',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6'
@@ -60,23 +65,25 @@ class UsersController extends Controller
     }
 
 //    资料编辑页面跳转
-    public function edit(User $user){
+    public function edit(User $user)
+    {
         $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
 //    资料更新
-    public function update(User $user, Request $request){
+    public function update(User $user, Request $request)
+    {
         $this->authorize('update', $user);
-        $this->validate($request,[
-           'name' => 'required|max:50',
-           'password' => 'nullable|confirmation|min:6'
+        $this->validate($request, [
+            'name' => 'required|max:50',
+            'password' => 'nullable|confirmation|min:6'
         ]);
 
         $data = [];
         $data['name'] = $request->name;
 //        验证密码是都修改
-        if ($request->password){
+        if ($request->password) {
             $data['password'] = bcrypt($request->password);
         }
 
@@ -87,7 +94,8 @@ class UsersController extends Controller
         return redirect()->route('users.show', $user);
     }
 
-    public function destroy(User $user){
+    public function destroy(User $user)
+    {
         $this->authorize('destroy', $user);
         $user->delete();
         session()->flash('success', '这个驾照被干掉啦！');
@@ -95,13 +103,14 @@ class UsersController extends Controller
     }
 
 //    邮件发送
-    protected function sendEmailConfirmationTo($user){
+    protected function sendEmailConfirmationTo($user)
+    {
         $view = 'emails.confirm';
         $data = compact('user');
         $to = $user->email;
         $subject = '感谢注册~请确认一下你的邮箱喔~';
 
-        Mail::send($view, $data, function ($massage) use ($to, $subject){
+        Mail::send($view, $data, function ($massage) use ($to, $subject) {
             $massage->to($to)->subject($subject);
         });
 
@@ -109,7 +118,8 @@ class UsersController extends Controller
     }
 
 //    激活验证
-    public function confirmEmail($token){
+    public function confirmEmail($token)
+    {
         $user = User::where('activation_token', $token)->firstOrFail();
 
         $user->activated = true;
@@ -119,5 +129,21 @@ class UsersController extends Controller
         Auth::login($user);
         session()->flash('success', '恭喜你！可以上路了！');
         return redirect()->route('users.show', [$user]);
+    }
+
+//    关注
+    public function followings(User $user)
+    {
+        $users = $user->followings()->paginate(20);
+        $title = $user->name . '关注的人';
+        return view('users.show_follow', compact('users', 'title'));
+    }
+
+//    粉丝
+    public function followers(User $user)
+    {
+        $users = $user->followers()->paginate(20);
+        $title = $user->name . '的粉丝';
+        return view('users.show_follow', compact('users', 'title'));
     }
 }
