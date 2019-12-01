@@ -79,5 +79,46 @@ class User extends Authenticatable
         return $this->statuses()
             ->orderBy('created_at', 'desc');
     }
+
+//    获取粉丝列表
+    public function followers(){
+        return $this->belongsToMany(
+            User::class, 'followers', 'user_id', 'follower_id'
+        );
+    }
+
+//    获取用户关注列表
+    public function followings(){
+        return $this->belongsToMany(
+            User::class, 'followers', 'follower_id', 'user_id'
+        );
+    }
+
+//    关注方法
+    public function follow($user_ids){
+        if (!is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+//    取消关注方法
+    public function unfollow($user_ids){
+        if (!is_array($user_ids)){
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+//    检测是否关注
+    public function isFollowing($user_id){
+//        通过访问User类的followings属性直接获取到关注用户的集合
+//        是Laravel Eloquent提供的动态属性属性功能
+//        $user->followings返回Eloquent集合(返回数据集合)
+//        $user->followings()返回数据库请求构建器(返回数据库查询语句)
+//        contains()是Collection类的一个方法
+        return $this->followings->contains($user_id);
+//        等价于
+//        return $this->followings()->get()->contains($user_id);
+    }
 }
 
