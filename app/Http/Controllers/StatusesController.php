@@ -25,4 +25,14 @@ class StatusesController extends Controller
         session()->flash('success', '发送出去啦~');
         return redirect()->back();
     }
+
+
+    public function destroy(Status $status){
+//        删除授权检测
+        $this->authorize('destroy', $status);
+        $status->delete();
+        session()->flash('success', '这条动态已经删除啦');
+        return redirect()->back();
+    }
+
 }
