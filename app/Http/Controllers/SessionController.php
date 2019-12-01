@@ -32,8 +32,9 @@ class SessionController extends Controller
             if (Auth::user()->activated){
                 //            登陆成功
                 session()->flash('success', '欢迎回到路上');
-                $fallback = route('users.show', [Auth::user()]);
-                return redirect()->intended($fallback);
+//                $fallback = route('users.show', [Auth::user()]);
+//                return redirect()->intended($fallback);
+                return redirect('/');
             }else{
 //                未验证的账号
                 Auth::logout;
